@@ -1,0 +1,85 @@
+﻿@{
+    ViewData["Title"] = "Página Inicial";
+}
+@model List<Alertas>;
+
+
+<div class="text-center">
+        <img style="width:200px;height:300px;" src="~/img/logo2.png" />
+    
+
+
+    @(Html
+                                    .Grid(Model)
+                                    .Build(columns =>
+                                    {
+                                    columns.Add(model => model.Id).Titled("id");
+                                    columns.Add(model => model.Nome).Titled("Nome");
+                                    columns.Add(model => model.Endereco).Titled("Endereço de Cadastro");
+                                    columns.Add(model => $"<button    class=\"btn btn - primary\"  onclick=\"openModal({model.Id}, '{model.Latitude}', '{model.Longitude}', '{model.Nome}')\" data-id=\"{model.Id}\">Ver Localização</button>").Titled("Localização do Grito").Encoded(false);
+    })
+                                    .Empty("Sem dados")
+                                    .Filterable()
+                                    .Sortable()
+                                    .Pageable()
+    )
+
+
+</div>
+
+
+
+<div id="id_da_div_modal" class="modal fade">
+    <div class="modal-dialog" style="max-width:700px">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">Fechar</span></button>
+            </div>
+            <div class="modal-body">
+                <div id="nomePessoa"><p> </p></div>
+                <div id="dvMap" style="width: 650px; height: 500px">
+                </div>
+
+            </div>
+
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+@section Scripts
+{
+<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA09E_qCdshKdTJPHVuoDUB8ULwbqBKogM"></script>
+<script type="text/javascript">
+
+
+    function openModal(id, latitude, longitude, nome) {
+
+        var mapOptions = {
+            center: new google.maps.LatLng(latitude, longitude),
+            zoom: 15,
+            mapTypeId: google.maps.MapTypeId.ROADMAP
+        };
+        var infoWindow = new google.maps.InfoWindow();
+        var map = new google.maps.Map(document.getElementById("dvMap"), mapOptions);
+
+            var myLatlng = new google.maps.LatLng(latitude, longitude);
+            var marker = new google.maps.Marker({
+                position: myLatlng,
+                map: map,
+                title: nome
+            });
+            (function (marker) {
+                google.maps.event.addListener(marker, "click", function (e) {
+                    infoWindow.setContent("Socorro");
+                    infoWindow.open(map, marker);
+                });
+            })(marker);
+   
+        $("#id_da_div_modal").modal("show");
+
+
+     
+    }
+
+</script>
+}
